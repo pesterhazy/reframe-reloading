@@ -13,7 +13,7 @@
 ;; Contains a two layer map, keyed first by `kind` (of handler), and then `id` of handler.
 ;; Leaf nodes are handlers.
 (def kind->id->handler  (atom {}))
-
+(def hide-warnings? (atom false))
 
 (defn get-handler
 
@@ -35,7 +35,7 @@
 (defn register-handler
   [kind id handler-fn]
   (when debug-enabled?                                       ;; This is in a separate when so Closure DCE can run
-    (when (get-handler kind id false)
+    (when (and (not @hide-warnings?) (get-handler kind id false))
       (console :warn "re-frame: overwriting" (str kind) "handler for:" id)))   ;; allow it, but warn. Happens on figwheel reloads.
   (swap! kind->id->handler assoc-in [kind id] handler-fn)
   handler-fn)    ;; note: returns the just registered handler
@@ -54,3 +54,6 @@
    (if (get-handler kind id)
      (swap! kind->id->handler update-in [kind] dissoc id)
      (console :warn "re-frame: can't clear" (str kind) "handler for" (str id ". Handler not found.")))))
+
+(defn set-hide-warnings! [v]
+  (reset! hide-warnings? v))

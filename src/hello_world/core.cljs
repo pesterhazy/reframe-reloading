@@ -1,10 +1,12 @@
 (ns ^:figwheel-hooks hello-world.core
   (:require [re-frame.core :as rf]
+            [re-frame.registrar]
             [clojure.string :as str]
             [reagent.core :as reagent :refer [atom]]))
 
-(defn ^:before-load on-reload []
-  (println "before-load"))
+(defn ^:before-load before-load []
+  (println "before-load!")
+  (re-frame.registrar/set-hide-warnings! true))
 
 ;; -- Domino 1 - Event Dispatch -----------------------------------------------
 
